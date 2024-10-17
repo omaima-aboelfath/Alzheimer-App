@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_app/firebase_utils.dart';
 import 'package:graduation_app/model/task_data.dart';
@@ -58,33 +59,7 @@ class TaskListItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                   color: AppColors.redColor
                   ),
-              child:
-                  //  task.isDone
-                  //     ?
-                  //  TextButton(
-                  //     onPressed: ()  { //async
-                  //       // // Toggle isDone state
-                  //       // task.isDone = !task.isDone;
-                  //       // // Update task in Firestore
-                  //       // await FirebaseFirestore.instance
-                  //       //     .collection('tasks')
-                  //       //     .doc(task.id)
-                  //       //     .update({'isDone': task.isDone});
-                  //       // // Notify listeners (Provider) to update UI
-                  //       // Provider.of<ListProvider>(context, listen: false)
-                  //       //     .updateTask(task, userProvider.currentUser!.id);
-                  //     },
-                  //     child: Text(
-                  //       "Done!",
-                  //       style: TextStyle(
-                  //         color: AppColors.greenColor,
-                  //         fontWeight: FontWeight.bold,
-                  //         fontSize: 24,
-                  //       ),
-                  //     ),
-                  //   )
-                  // :
-                  IconButton(
+              child: IconButton(
                 onPressed: () {
                   // delete task
                   FirebaseUtils.deleteTaskFromFireStore(
@@ -130,51 +105,50 @@ class TaskListItem extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: AppColors.lightBlue
-                    // color: task.isDone == true
-                    //     ? AppColors.whiteColor
-                    //     : AppColors.primaryColor
+                    // color: AppColors.lightBlue
+                    color: task.isDone == true
+                        ? AppColors.white
+                        : AppColors.lightBlue
                     ),
                 child:
-                    //  task.isDone
-                    //     ?
-                    //  TextButton(
-                    //     onPressed: ()  { //async
-                    //       // // Toggle isDone state
-                    //       // task.isDone = !task.isDone;
-                    //       // // Update task in Firestore
-                    //       // await FirebaseFirestore.instance
-                    //       //     .collection('tasks')
-                    //       //     .doc(task.id)
-                    //       //     .update({'isDone': task.isDone});
-                    //       // // Notify listeners (Provider) to update UI
-                    //       // Provider.of<ListProvider>(context, listen: false)
-                    //       //     .updateTask(task, userProvider.currentUser!.id);
-                    //     },
-                    //     child: Text(
-                    //       "Done!",
-                    //       style: TextStyle(
-                    //         color: AppColors.greenColor,
-                    //         fontWeight: FontWeight.bold,
-                    //         fontSize: 24,
-                    //       ),
-                    //     ),
-                    //   )
-                    // :
+                     task.isDone
+                        ?
+                     TextButton(
+                        onPressed: ()  async{ 
+                          // Toggle isDone state
+                          task.isDone = !task.isDone;
+                          // Update task in Firestore
+                          await FirebaseFirestore.instance
+                              .collection('tasks')
+                              .doc(task.id)
+                              .update({'isDone': task.isDone});
+                          // Notify listeners (Provider) to update UI
+                          Provider.of<ListProvider>(context, listen: false)
+                              .updateTask(task); //, userProvider.currentUser!.id
+                        },
+                        child: Text(
+                          "Done!",
+                          style: TextStyle(
+                            color: AppColors.greenColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        ),
+                      )
+                    :
                     IconButton(
-                  onPressed: () {
-                    //async
+                  onPressed: () async{
                     // If isDone is true, it will become false, and vice versa.
                     // This ensures that clicking the button again will return the task to its initial state.
-                    // task.isDone = !task.isDone;
-                    // // Update task in Firestore
-                    // await FirebaseFirestore.instance
-                    //     .collection('tasks')
-                    //     .doc(task.id)
-                    //     .update({'isDone': task.isDone});
-                    // // Notify listeners (Provider) to update UI
-                    // Provider.of<ListProvider>(context, listen: false)
-                    //     .updateTask(task, userProvider.currentUser!.id);
+                    task.isDone = !task.isDone;
+                    // Update task in Firestore
+                    await FirebaseFirestore.instance
+                        .collection('tasks')
+                        .doc(task.id)
+                        .update({'isDone': task.isDone});
+                    // Notify listeners (Provider) to update UI
+                    Provider.of<ListProvider>(context, listen: false)
+                        .updateTask(task); //, userProvider.currentUser!.id
                   },
                   icon: Icon(
                     Icons.check,

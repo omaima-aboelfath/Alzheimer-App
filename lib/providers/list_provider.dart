@@ -86,7 +86,7 @@ class ListProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  void updateTask(Task updatedTask, String uId) {
+  void updateTask(Task updatedTask) {//, String uId
     for (int i = 0; i < tasksList.length; i++) {
       if (tasksList[i].id == updatedTask.id) {
         tasksList[i] = updatedTask;

@@ -20,7 +20,7 @@ class Task {
   // take data from firebase : json => object
   // send data to firebase : object => json
 
-  // OR use  default constructor
+ // json to object
   Task.fromFireStore(Map<String, dynamic> map)
       : this(
             id: map['id'] as String, // casting 'optional'
