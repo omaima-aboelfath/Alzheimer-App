@@ -7,12 +7,15 @@ class Task {
   String description;
   DateTime dateTime;
   bool isDone;
+  // String formattedDateTime;
   Task(
       {this.id = '',
       required this.title,
       required this.description,
       required this.dateTime,
-      this.isDone = false});
+      this.isDone = false,
+      // required this.formattedDateTime
+      });
 
   // take data from firebase : json => object
   // send data to firebase : object => json
@@ -25,7 +28,9 @@ class Task {
             description: map['description'],
             dateTime: DateTime.fromMillisecondsSinceEpoch(
                 map['dateTime']), // to convert int to DateTime
-            isDone: map['isDone']);
+            isDone: map['isDone'],
+            // formattedDateTime: map['formattedDateTime']
+            );
 
   // object => json = map
   Map<String, dynamic> toFirestore() {
@@ -34,7 +39,8 @@ class Task {
       'title': title,
       'description': description,
       'dateTime': dateTime.millisecondsSinceEpoch, // to convert DateTime to int
-      'isDone': isDone
+      'isDone': isDone,
+      // 'formattedDateTime': formattedDateTime
     };
   }
 }

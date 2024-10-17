@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_app/screens/patient_screen.dart';
 import 'package:graduation_app/utils/app_colors.dart';
 
 class CaregiverScreen extends StatelessWidget {
@@ -9,9 +10,19 @@ class CaregiverScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'caregiver screen',
-          style: TextStyle(color: AppColors.white),
+          'Caregiver Screen',
+          style: Theme.of(context).textTheme.displayMedium,
         ),
+        actions: [
+          TextButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, PatientScreen.routeName);
+              },
+              label: Text(
+                'go to patient',
+                style: Theme.of(context).textTheme.displaySmall,
+              ))
+        ],
       ),
     );
   }
