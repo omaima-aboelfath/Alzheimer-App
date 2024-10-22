@@ -1,8 +1,13 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+package="com.example.graduation_app">
     <application
         android:label="graduation_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Default Notification Channel for Firebase Messaging -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="default_channel" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

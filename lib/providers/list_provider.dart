@@ -9,14 +9,15 @@ class ListProvider extends ChangeNotifier {
   var selectDate = DateTime.now();
 
   // functions
-/* my old function
-  void getAllTasksFromFireStore() async { //String uId
+// my old function 
+  /*
+  Future<void> getAllTasksFromFireStore(String uId) async { //String uId
     // .get will return Future<QuerySnapshot<Task>> => return every thing in collection(docs) in firebase
     // use await on result because it returns => --Future--<QuerySnapshot<Task>>
     // use .snapshot instead of .get to apply realtime changes
-    var querySnapshot = await FirebaseUtils.getTasksCollection() //uId
+    var querySnapshot = await FirebaseUtils.getTasksCollection(uId) //uId
         .orderBy('dateTime', descending: true)
-        .get(); //// get all tasks
+        .get(); //// get all tasks ,,,,, .get();
     // we want to convert List<QueryDocumentSnapshot<Task>> => List<Task>
     // doc is object from List<QueryDocumentSnapshot<Task>>
     // map will convert every document snapshot into task
@@ -54,11 +55,12 @@ class ListProvider extends ChangeNotifier {
     // });
 
     notifyListeners();
-  }
-*/
+  }*/
 
-  Future<void> getAllTasksFromFireStore() async {
-    FirebaseUtils.getTasksCollection()
+  // new
+  Future<void> getAllTasksFromFireStore(String uId) async {
+    FirebaseUtils.getTasksCollection(uId)
+    // var querySnapshot = await FirebaseUtils.getTasksCollection(uId)
         .orderBy('dateTime', descending: false)
         .snapshots()
         .listen((querySnapshot) {
@@ -77,16 +79,17 @@ class ListProvider extends ChangeNotifier {
       notifyListeners();
     });
   }
+  
 
   void changeSelectDate(DateTime newDate, String uId) {
     selectDate = newDate; // change the date to the selected date by user
     // we want when clicking on newDate calling getAllTasksFromFireStore because there we filtering based on selectedDates
     // we call it also after adding new task on bottom sheet to update list
-    getAllTasksFromFireStore(); //uId
+    getAllTasksFromFireStore(uId); //uId
     // notifyListeners();
   }
 
-  void updateTask(Task updatedTask) {//, String uId
+  void updateTask(Task updatedTask, String uId) {//, String uId
     for (int i = 0; i < tasksList.length; i++) {
       if (tasksList[i].id == updatedTask.id) {
         tasksList[i] = updatedTask;
@@ -94,7 +97,7 @@ class ListProvider extends ChangeNotifier {
         break; // Exit the loop once the task is found and updated
       }
     }
-    getAllTasksFromFireStore(); //uId
+    getAllTasksFromFireStore(uId); //uId
   }
 
   // Future<void> updateTask(Task task) async {

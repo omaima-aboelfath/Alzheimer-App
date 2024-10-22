@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graduation_app/firebase_utils.dart';
 import 'package:graduation_app/model/task_data.dart';
 import 'package:graduation_app/providers/list_provider.dart';
+import 'package:graduation_app/providers/user_provider.dart';
 import 'package:graduation_app/screens/patient_screen.dart';
 import 'package:graduation_app/screens/task_list/task_list_item.dart';
 import 'package:graduation_app/utils/app_colors.dart';
@@ -11,6 +12,8 @@ import 'package:provider/provider.dart';
 
 class AddTaskScreen extends StatefulWidget {
   static const String routeName = 'add_task';
+
+  const AddTaskScreen({super.key});
 
   @override
   State<AddTaskScreen> createState() => _AddTaskScreenState();
@@ -55,11 +58,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                             color: AppColors.mediumBlue, width: 1.5)),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                             color: AppColors.mediumBlue, width: 1.5)),
                   )),
             ),
@@ -85,11 +88,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                             color: AppColors.mediumBlue, width: 1.5)),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                             color: AppColors.mediumBlue, width: 1.5)),
                   )),
             ),
@@ -140,10 +143,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     // validate() has forloop to loop on validators that i make
     // if we return string => invalid => validate will return false
     if (formKey.currentState?.validate() == true) {
-      // var userProvider = Provider.of<UserProvider>(context, listen: false);
+      var userProvider = Provider.of<UserProvider>(context, listen: false);
       if (_dateTime == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Please select a date and time'),
             backgroundColor: Colors.red,
           ),
@@ -158,37 +161,37 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           dateTime: _dateTime!,
           // formattedDateTime: formattedDateTime
           ); //selectDate
-      FirebaseUtils.addTaskToFireStore(task) //, userProvider.currentUser!.id
+      FirebaseUtils.addTaskToFireStore(task,userProvider.currentUser!.id) //, userProvider.currentUser!.id
           // online
           .then(
-        (value) async {
+        (value) async { 
           await listProvider
-              .getAllTasksFromFireStore(); //userProvider.currentUser!.id
+              .getAllTasksFromFireStore(userProvider.currentUser!.id); //userProvider.currentUser!.id
           Navigator.pushNamed(context, PatientScreen.routeName);
           print('task added successfully');
           print(task.id);
           print(task.title + task.description);
           // Navigator.pop(context); // to close bottomSheet after adding task
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Task added successfully')),
+            const SnackBar(content: Text('Task added successfully')),
           );
         },
       )
           // offline
           .timeout(
         // after one sec will print
-        Duration(seconds: 1),
+        const Duration(seconds: 1),
         onTimeout: () {
           print('task added successfully');
           Navigator.pop(context); // to close bottomSheet after adding task
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Task added successfully')),
+            const SnackBar(content: Text('Task added successfully')),
           );
 
           // print(task.id);
           // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
           listProvider
-              .getAllTasksFromFireStore(); // update list when clicking the button
+              .getAllTasksFromFireStore(userProvider.currentUser!.id); // update list when clicking the button
           //getAllTasksFromFireStore(userProvider.currentUser!.id)
         },
       );
