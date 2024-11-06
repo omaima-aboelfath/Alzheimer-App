@@ -19,8 +19,8 @@ class FirebaseUtils {
   static CollectionReference<Task> getTasksCollection(String uId) {
     return // to save tasks list for each user
         getUsersCollection()
-        .doc(uId) //uId
-        // FirebaseFirestore.instance
+            .doc(uId) //uId
+            // FirebaseFirestore.instance
             .collection(Task.collectionName)
             .withConverter<Task>(
                 fromFirestore: (snapshot, options) =>
@@ -28,19 +28,55 @@ class FirebaseUtils {
                 toFirestore: (task, options) => task.toFirestore());
   }
 
-  static Future<void> addTaskToFireStore(Task task, String uId) {
-    //, String uId
-    var taskCollection = getTasksCollection(uId); // create & get collection ///uId
+  // my code
+  // static Future<void> addTaskToFireStore(Task task, String uId) {
+  //   var taskCollection =
+  //       getTasksCollection(uId); // create & get collection ///uId
+  //   var taskDocRef = taskCollection
+  //       .doc(); // create doc - give it id or it will generate auto-id
+  //   task.id = taskDocRef.id; // auto-id
+  //   return taskDocRef
+  //       .set(task); // to make isDone = true - store task in firebase
+  // }
+
+  static Future<void> addTaskToFireStore(
+      Task task, String uId, MyUser patient) async {
+    var taskCollection =
+        getTasksCollection(uId); // create & get collection ///uId
     var taskDocRef = taskCollection
         .doc(); // create doc - give it id or it will generate auto-id
     task.id = taskDocRef.id; // auto-id
-    return taskDocRef
-        .set(task); // to make isDone = true - store task in firebase
+    // Store the task in Firestore
+    await taskDocRef
+        .set(task); // Ensure to use toFirestore() if Task is a class
+    // Update the patient's taskIds in Firestore
+    var patientDocRef =
+        FirebaseFirestore.instance.collection(MyUser.collectionName).doc(uId);
+    // Add the new task ID to the taskIds list
+    await patientDocRef.update({
+      'taskIds':
+          FieldValue.arrayUnion([task.id]) // Use arrayUnion to avoid duplicates
+    });
   }
 
+  // testttt
+//   static Future<void> addTaskToFireStore(Task task, String uId) async {
+//   var taskCollection = FirebaseFirestore.instance
+//       .collection('users')
+//       .doc(uId)
+//       .collection('tasks'); // Save tasks directly in the user's tasks subcollection
+
+//   var taskDocRef = taskCollection.doc(); // Create new task document
+//   task.id = taskDocRef.id; // Assign the auto-generated ID to the task
+//   await taskDocRef.set(task.toFirestore()); // Store the task in Firestore
+// }
+
   // OR Task task + getTasksCollection().doc(task.id)
-  static Future<void> deleteTaskFromFireStore(Task task, String id, String uId) {
-    return getTasksCollection(uId).doc(id).delete(); // getTasksCollection(uId).doc(id).delete();
+  static Future<void> deleteTaskFromFireStore(
+      Task task, String id, String uId) {
+    return getTasksCollection(uId)
+        .doc(id)
+        .delete(); // getTasksCollection(uId).doc(id).delete();
   }
 
   // update -- edit
@@ -66,15 +102,81 @@ class FirebaseUtils {
         );
   }
 
-  // in register
+  // Register new user
+
   static Future<void> addUserToFireStore(MyUser myUser) {
     return getUsersCollection().doc(myUser.id).set(myUser);
   }
 
-  // in login
+  // Read user data on login
   static Future<MyUser?> readUserFromFireStore(String uId) async {
     var snapshot =
         await getUsersCollection().doc(uId).get(); // read data or specific user
     return snapshot.data();
   }
+
+  ///////////////////////////
+
+  // Method to fetch patients assigned to a specific caregiver
+  static Future<List<MyUser>> fetchCaregiverPatients(String caregiverId) async {
+    var patientSnapshots = await FirebaseFirestore.instance
+        .collection(
+            'users') // Assuming you store all users in a 'users' collection
+        .where('role', isEqualTo: 'Patient') // Filter by role
+        .get();
+
+    // Convert each document into a `MyUser` instance
+    return patientSnapshots.docs.map((doc) {
+      return MyUser.fromFireStore(doc.data());
+    }).toList();
+  }
+
+  // Fetch tasks for a specific patient where isDone = false
+  /*
+  static Future<List<Task>> fetchTasksForPatient(String patientId) async {
+
+    // var tasksSnapshot = await
+    // // fetchCaregiverPatients().
+    // FirebaseFirestore.instance
+    //     .collection('tasks')
+    //     .where('id', isEqualTo: patientId)
+    //     .where('isDone', isEqualTo: false)
+    //     .get();
+    ////////////
+    // return // to save tasks list for each user
+    //     getUsersCollection()
+    //         .doc(patientId) //uId
+    //         // FirebaseFirestore.instance
+    //         .collection(Task.collectionName)
+    //         .where('isDone', isEqualTo: false).get()
+    //         .withConverter<Task>(
+    //             fromFirestore: (snapshot, options) =>
+    //                 Task.fromFireStore(snapshot.data()!),
+    //             toFirestore: (task, options) => task.toFirestore());
+    /////////////////
+    //       print('Tasks fetched: ${tasksSnapshot.docs.length} for Patient ID: $patientId');
+    //  // If you have task data, log it
+    // tasksSnapshot.docs.forEach((doc) {
+    //     print('Task ID: ${doc.id}, Data: ${doc.data()}');
+    // });
+    // // Map the tasks to the `Task` model and return the list
+    // return tasksSnapshot.docs
+    //     .map((doc) => Task.fromFireStore(doc.data()))
+    //     .toList();
+
+ ///////lastt
+    var tasksSnapshots = await FirebaseFirestore.instance
+        .collection(
+            'tasks') // Assuming you store all users in a 'users' collection
+        .where('id', isEqualTo: patientId) // Filter by role
+        .where('isDone', isEqualTo: false)
+        .get();
+   // Convert each document into a `MyUser` instance
+    return tasksSnapshots.docs.map((doc) {
+      return Task.fromFireStore(doc.data());
+    }).toList();
+
+    
+  }
+  */
 }

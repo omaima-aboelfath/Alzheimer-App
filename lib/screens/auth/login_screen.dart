@@ -105,17 +105,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: ButtonStyle(
                             backgroundColor:
                                 WidgetStatePropertyAll(AppColors.lightBlue)),
-                        onPressed: () {
+                        onPressed: () async {
                           //if caregiver => caregiverScreen
                           //if patient => patient screen
-                          login();
-                          if (userProvider.currentUser!.role == 'Patient') {
-                            Navigator.pushNamed(
-                                context, PatientScreen.routeName);
-                          } else if (userProvider.currentUser!.role == 'Caregiver') {
-                            Navigator.pushNamed(
-                                context, CaregiverScreen.routeName);
-                          }
+                          await login(userProvider);
                         },
                         child: Text('Login',
                             style: Theme.of(context)
@@ -138,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void login() async {
+  Future<void> login(UserProvider userProvider) async {
     // loop on every validator in text form field and see if its valid or not
     // if return null => valid = true
     if (formKey.currentState?.validate() == true) {
@@ -155,12 +148,13 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         var user = await FirebaseUtils.readUserFromFireStore(
             credential.user?.uid ?? '');
+        print('Logged in user: ${credential.user?.email}');
         if (user == null) {
           // if not exist in firebase
           return;
         }
         // not care about every update, no update in UI, get the info of user one time & if he changes i dont care
-        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        // var userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.updateUser(user);
         //todo: hide loading
         // DialogUtils.hideLoading(context);
@@ -180,6 +174,11 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: AppColors.greenColor,
           ),
         );
+        if (userProvider.currentUser?.role == 'Patient') {
+          Navigator.pushReplacementNamed(context, PatientScreen.routeName);
+        } else if (userProvider.currentUser?.role == 'Caregiver') {
+          Navigator.pushReplacementNamed(context, CaregiverScreen.routeName, arguments: userProvider.currentUser!.id);
+        }
         // Navigator.pushReplacementNamed(context, HomeScreen.routeName);
         // print user id and if not found print null
         print(credential.user?.uid ?? "");
@@ -221,6 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
         //     posActionName: 'Ok');
         print(e
             .toString()); // print the string of exception that not specified above
+        print('Login failed: ${e.toString()}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),

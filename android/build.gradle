@@ -4,6 +4,9 @@ allprojects {
         google()
         mavenCentral()
     }
+    // dependencies {
+    //     classpath 'com.android.tools.build:gradle:8.0.2'
+    // }
 }
 
 rootProject.buildDir = "../build"
@@ -18,5 +21,5 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 // dependencies {
-//     classpath "org.codehaus.groovy:groovy-all:2.5.14" // or any stable version
+//         classpath 'com.android.tools.build:gradle:8.0.2'
 // }

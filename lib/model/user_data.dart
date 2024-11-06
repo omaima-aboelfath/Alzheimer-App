@@ -6,27 +6,28 @@ class MyUser {
   String password;
   String role; // "patient" or "caregiver"
   // final String relationship; // optional, for caregivers
-  // String patientName; // optional, for caregivers
-  MyUser(
-      {required this.id,
-      required this.name,
-      required this.email,
-      required this.password,
-      required this.role,
-      // this.relationship = '',
-      // this.patientName = '',
-      });
+  List<String> taskIds; // New property to store task IDs
+  MyUser({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.role,
+    // this.relationship = '',
+    this.taskIds = const [], // Initialize with an empty list by default
+  });
 
   // json to object
   MyUser.fromFireStore(Map<String, dynamic> data)
       : this(
-            id: data['id'],
-            name: data['name'],
-            email: data['email'],
-            password: data['password'],
-            role: data['role'],
-            // patientName: data['patientName']
-            );
+          id: data['id'],
+          name: data['name'],
+          email: data['email'],
+          password: data['password'],
+          role: data['role'],
+          taskIds: List<String>.from(
+              data['taskIds'] ?? []), // Ensure taskIds are parsed
+        );
 
   // object to json
   Map<String, dynamic> toFirestore() {
@@ -36,7 +37,17 @@ class MyUser {
       'email': email,
       'password': password,
       'role': role,
-      // 'patientName': patientName
+      'taskIds': taskIds, 
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MyUser) return false;
+    return id == other.id; // Compare based on unique ID
+  }
+
+  @override
+  int get hashCode => id.hashCode; // Use ID for hashCode
 }

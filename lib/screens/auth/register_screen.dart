@@ -33,6 +33,14 @@ class _LoginScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Register',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(color: AppColors.white)),
+        centerTitle: true,
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -180,14 +188,8 @@ class _LoginScreenState extends State<RegisterScreen> {
                         backgroundColor:
                             WidgetStatePropertyAll(AppColors.lightBlue),
                       ),
-                      onPressed: () {
-                        register();
-                        if (dropDownValue == 'Patient') {
-                          Navigator.pushNamed(context, PatientScreen.routeName);
-                        } else if (dropDownValue == 'Caregiver') {
-                          Navigator.pushNamed(
-                              context, CaregiverScreen.routeName);
-                        }
+                      onPressed: () async {
+                        await register();
                         // Add logic for handling form submission and validation here
                       },
                       child: Text('Register',
@@ -216,7 +218,7 @@ class _LoginScreenState extends State<RegisterScreen> {
     }
   }
 
-  void register() async {
+  Future<void> register() async {
     // loop on every validator in text form field and see if its valid or not
     // if return null => valid = true
     if (formKey.currentState?.validate() == true) {
@@ -231,21 +233,21 @@ class _LoginScreenState extends State<RegisterScreen> {
           email: emailController.text,
           password: passwordController.text,
         );
-        MyUser myUser = MyUser(
-            id: credential.user?.uid ?? '',
-            name: nameController.text,
-            email: emailController.text,
-            password: passwordController.text,
-            role: roleController.text,
-            // patientName: roleController.text == 'Patient'
-            //     ? nameController.text
-            //     : 'caregiver'
-                );
+        MyUser newUser = MyUser(
+          id: credential.user?.uid ?? '',
+          name: nameController.text,
+          email: emailController.text,
+          password: passwordController.text,
+          role: roleController.text,
+          // patientName: roleController.text == 'Patient'
+          //     ? nameController.text
+          //     : 'caregiver'
+        );
         print('before database');
-        await FirebaseUtils.addUserToFireStore(myUser);
+        await FirebaseUtils.addUserToFireStore(newUser);
         print('after database');
         var userProvider = Provider.of<UserProvider>(context, listen: false);
-        userProvider.updateUser(myUser);
+        userProvider.updateUser(newUser);
         //todo: hide loading
         // DialogUtils.hideLoading(context);
         // //show message
@@ -265,6 +267,11 @@ class _LoginScreenState extends State<RegisterScreen> {
             backgroundColor: AppColors.greenColor,
           ),
         );
+        if (newUser.role == 'Patient') {
+          Navigator.pushReplacementNamed(context, PatientScreen.routeName);
+        } else if (newUser.role == 'Caregiver') {
+          Navigator.pushReplacementNamed(context, CaregiverScreen.routeName);
+        }
         print(credential.user?.uid ?? "");
         // Navigator.pushReplacementNamed(context, HomeScreen.routeName);
       } on FirebaseAuthException catch (e) {
@@ -308,4 +315,5 @@ class _LoginScreenState extends State<RegisterScreen> {
       }
     }
   }
+
 }

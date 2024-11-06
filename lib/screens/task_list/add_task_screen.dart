@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_app/firebase_utils.dart';
 import 'package:graduation_app/model/task_data.dart';
-import 'package:graduation_app/providers/list_provider.dart';
+import 'package:graduation_app/providers/task_provider.dart';
 import 'package:graduation_app/providers/user_provider.dart';
 import 'package:graduation_app/screens/patient_screen.dart';
-import 'package:graduation_app/screens/task_list/task_list_item.dart';
 import 'package:graduation_app/utils/app_colors.dart';
+import 'package:graduation_app/utils/local_notification_service.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/timezone.dart';
 
 class AddTaskScreen extends StatefulWidget {
   static const String routeName = 'add_task';
@@ -24,10 +25,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String description = '';
   var formKey = GlobalKey<FormState>();
   DateTime? _dateTime;
-  late ListProvider listProvider; // global
+  late TaskProvider listProvider; // global
+  String selectedPriority = '';
   @override
   Widget build(BuildContext context) {
-    listProvider = Provider.of<ListProvider>(context);
+    listProvider = Provider.of<TaskProvider>(context);
     return Scaffold(
       body: Form(
         key: formKey,
@@ -139,6 +141,68 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
+  //before add scheduled task
+  // void addTask() {
+  //   // validate() has forloop to loop on validators that i make
+  //   // if we return string => invalid => validate will return false
+  //   if (formKey.currentState?.validate() == true) {
+  //     var userProvider = Provider.of<UserProvider>(context, listen: false);
+  //     if (_dateTime == null) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Please select a date and time'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //       return;
+  //     }
+  //     String formattedDateTime =
+  //         DateFormat('dd-MM-yyyy hh:mm a').format(_dateTime!);
+  //     Task task = Task(
+  //       title: title,
+  //       description: description,
+  //       dateTime: _dateTime!,
+  //       // formattedDateTime: formattedDateTime
+  //     ); //selectDate
+  //     FirebaseUtils.addTaskToFireStore(task,
+  //             userProvider.currentUser!.id) //, userProvider.currentUser!.id
+  //         // online
+  //         .then(
+  //       (value) async {
+  //         await listProvider
+  //             .getAllTasksFromFireStore(userProvider.currentUser!.id);
+  //         // Schedule the notification after adding the task
+  //         await listProvider.scheduleNotification(task);
+  //         Navigator.pushReplacementNamed(context, PatientScreen.routeName);
+  //         print('task added successfully');
+  //         print(task.id);
+  //         print(task.title + task.description);
+  //         // Navigator.pop(context); // to close bottomSheet after adding task
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('Task added successfully')),
+  //         );
+  //       },
+  //     )
+  //         // offline
+  //         .timeout(
+  //       // after one sec will print
+  //       const Duration(seconds: 1),
+  //       onTimeout: () {
+  //         print('task added successfully');
+  //         Navigator.pop(context); // to close bottomSheet after adding task
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('Task added successfully')),
+  //         );
+  //         // print(task.id);
+  //         // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
+  //         listProvider.getAllTasksFromFireStore(userProvider
+  //             .currentUser!.id); // update list when clicking the button
+  //         //getAllTasksFromFireStore(userProvider.currentUser!.id)
+  //       },
+  //     );
+  //   }
+  // }
+
   void addTask() {
     // validate() has forloop to loop on validators that i make
     // if we return string => invalid => validate will return false
@@ -153,48 +217,58 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         );
         return;
       }
-      String formattedDateTime =
-          DateFormat('dd-MM-yyyy hh:mm a').format(_dateTime!);
+      // String formattedDateTime =
+      //     DateFormat('dd-MM-yyyy hh:mm a').format(_dateTime!);
       Task task = Task(
-          title: title,
-          description: description,
-          dateTime: _dateTime!,
-          // formattedDateTime: formattedDateTime
-          ); //selectDate
-      FirebaseUtils.addTaskToFireStore(task,userProvider.currentUser!.id) //, userProvider.currentUser!.id
+        title: title,
+        description: description,
+        dateTime: _dateTime!,
+        priority: selectedPriority,
+        // formattedDateTime: formattedDateTime
+      ); //selectDate
+      // FirebaseUtils.addTaskToFireStore(task, userProvider.currentUser!.id)
+      FirebaseUtils.addTaskToFireStore(
+              task, userProvider.currentUser!.id, userProvider.currentUser!)
+
           // online
           .then(
-        (value) async { 
+        (value) async {
           await listProvider
-              .getAllTasksFromFireStore(userProvider.currentUser!.id); //userProvider.currentUser!.id
-          Navigator.pushNamed(context, PatientScreen.routeName);
+              .getAllTasksFromFireStore(userProvider.currentUser!.id);
+          // // Schedule the notification after adding the task
+          // // await listProvider.scheduleNotification(task);
+          Navigator.pushReplacementNamed(context, PatientScreen.routeName);
           print('task added successfully');
           print(task.id);
-          print(task.title + task.description);
-          // Navigator.pop(context); // to close bottomSheet after adding task
+          print('${task.title} ${task.description}');
+          LocalNotificationService.showScheduledNotification(
+              currentDate: _dateTime!);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Task added successfully')),
+            const SnackBar(
+              content: Text('Task added successfully'),
+              backgroundColor: Colors.green,
+            ),
           );
-        },
-      )
-          // offline
-          .timeout(
-        // after one sec will print
-        const Duration(seconds: 1),
-        onTimeout: () {
-          print('task added successfully');
-          Navigator.pop(context); // to close bottomSheet after adding task
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Task added successfully')),
-          );
-
-          // print(task.id);
-          // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
-          listProvider
-              .getAllTasksFromFireStore(userProvider.currentUser!.id); // update list when clicking the button
-          //getAllTasksFromFireStore(userProvider.currentUser!.id)
         },
       );
+      // offline
+      //     .timeout(
+      //   // after one sec will print
+      //   const Duration(seconds: 1),
+      //   onTimeout: () {
+      //     print('task added successfully');
+      //     Navigator.pop(context); // to close bottomSheet after adding task
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       const SnackBar(content: Text('Task added successfully')),
+      //     );
+
+      //     // print(task.id);
+      //     // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
+      //     listProvider.getAllTasksFromFireStore(userProvider
+      //         .currentUser!.id); // update list when clicking the button
+      //     //getAllTasksFromFireStore(userProvider.currentUser!.id)
+      //   },
+      // );
     }
   }
 }
