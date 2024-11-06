@@ -45,7 +45,7 @@ class TaskBarChart extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Task Completion Chart',
+          'Number of Tasks',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         SizedBox(height: 10),

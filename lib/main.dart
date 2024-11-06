@@ -22,6 +22,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:graduation_app/screens/location_tracker.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -99,7 +100,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-    String? userId; // Variable to store the current user's ID
+  String? userId; // Variable to store the current user's ID
 
   @override
   void initState() {
@@ -114,7 +115,7 @@ class _MyAppState extends State<MyApp> {
         print('=== User is currently signed out');
       } else {
         print('=== User is signed in');
-                userId = user.uid; // Store the logged-in user's ID
+        userId = user.uid; // Store the logged-in user's ID
         final listProvider = Provider.of<TaskProvider>(context, listen: false);
         listProvider.getAllTasksFromFireStore(
             user.uid); // Fetch tasks for logged-in user
@@ -135,8 +136,8 @@ class _MyAppState extends State<MyApp> {
         RegisterScreen.routeName: (context) => RegisterScreen(),
         PatientScreen.routeName: (context) => PatientScreen(),
         CaregiverScreen.routeName: (context) => CaregiverScreen(
-            // body: '',
-            uId: userId ?? '', // Pass userId or an empty string if null
+              // body: '',
+              uId: userId ?? '', // Pass userId or an empty string if null
             ),
         AddTaskScreen.routeName: (context) => AddTaskScreen(),
         NotificationClass.routeName: (context) => NotificationClass(),
@@ -149,6 +150,7 @@ class _MyAppState extends State<MyApp> {
         },
         LocalNotificationTest.routeName: (context) => LocalNotificationTest(),
         Caregiver.routeName: (context) => Caregiver(),
+        '/locationTracker': (context) => LocationTracker()
       },
     );
   }

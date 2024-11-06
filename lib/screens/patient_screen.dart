@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:graduation_app/providers/task_provider.dart';
 import 'package:graduation_app/providers/user_provider.dart';
 import 'package:graduation_app/screens/auth/login_screen.dart';
-import 'package:graduation_app/screens/caregiver_screen.dart';
+import 'package:graduation_app/screens/location_tracker.dart';
 import 'package:graduation_app/screens/task_list/add_task_screen.dart';
 import 'package:graduation_app/screens/task_list/task_list_item.dart';
 import 'package:graduation_app/utils/app_colors.dart';
@@ -124,6 +124,16 @@ class _PatientScreenState extends State<PatientScreen> {
                     },
                     itemCount: listProvider.tasksList.length,
                   ),
+          ),
+          // Add the button for GPS module
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LocationTracker()),
+              );
+            },
+            child: Text('Open GPS Module'),
           ),
         ],
       ),    
