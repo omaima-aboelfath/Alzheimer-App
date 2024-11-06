@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 class Caregiver extends StatelessWidget {
   static const String routeName = 'caregiver';
 
+  const Caregiver({super.key});
+
   @override
   Widget build(BuildContext context) {
     var listProvider = Provider.of<TaskProvider>(context);
@@ -14,12 +16,12 @@ class Caregiver extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('You will be responsible of:'),
+          const Text('You will be responsible of:'),
           Container(
             height: MediaQuery.of(context).size.height * 0.7,
             width: MediaQuery.of(context).size.width * 0.8,
             color: AppColors.greenColor,
-            child: Column(
+            child: const Column(
               children: [ListTile()],
             ),
           )

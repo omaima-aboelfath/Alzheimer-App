@@ -208,7 +208,7 @@ class TaskProvider extends ChangeNotifier {
       return;
     }
 
-    var androidDetails = AndroidNotificationDetails(
+    var androidDetails = const AndroidNotificationDetails(
       'your_channel_id',
       'Your Channel Name',
       importance: Importance.max,
@@ -222,7 +222,7 @@ class TaskProvider extends ChangeNotifier {
       'Task Reminder',
       'You have a task: ${task.title}',
       tz.TZDateTime.from(
-          task.dateTime.subtract(Duration(minutes: 10)), tz.local),
+          task.dateTime.subtract(const Duration(minutes: 10)), tz.local),
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:

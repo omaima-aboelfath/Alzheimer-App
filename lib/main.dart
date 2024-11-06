@@ -133,14 +133,14 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: navigatorKey,
       routes: {
         LoginScreen.routeName: (context) => LoginScreen(),
-        RegisterScreen.routeName: (context) => RegisterScreen(),
-        PatientScreen.routeName: (context) => PatientScreen(),
+        RegisterScreen.routeName: (context) => const RegisterScreen(),
+        PatientScreen.routeName: (context) => const PatientScreen(),
         CaregiverScreen.routeName: (context) => CaregiverScreen(
               // body: '',
               uId: userId ?? '', // Pass userId or an empty string if null
             ),
-        AddTaskScreen.routeName: (context) => AddTaskScreen(),
-        NotificationClass.routeName: (context) => NotificationClass(),
+        AddTaskScreen.routeName: (context) => const AddTaskScreen(),
+        NotificationClass.routeName: (context) => const NotificationClass(),
         NotificationScreen.routeName: (context) {
           // Retrieve the message from the arguments
           final RemoteMessage message =

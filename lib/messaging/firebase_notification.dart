@@ -3,7 +3,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_app/main.dart';
-import 'package:graduation_app/screens/notification.dart';
 import 'package:graduation_app/screens/notification_screen.dart';
 
 class FirebaseNotifications {

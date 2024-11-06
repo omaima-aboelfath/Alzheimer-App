@@ -102,8 +102,8 @@ class _LoginScreenState extends State<RegisterScreen> {
                           setState(() {});
                         },
                         icon: isObscure
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility)),
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility)),
                   ),
                   CustomTextfield(
                     obscureText: isObscure,
@@ -132,8 +132,8 @@ class _LoginScreenState extends State<RegisterScreen> {
                           setState(() {});
                         },
                         icon: isObscure
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility)),
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(14),
@@ -262,7 +262,7 @@ class _LoginScreenState extends State<RegisterScreen> {
         // );
         print("Register Successfully");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Register successfully'),
             backgroundColor: AppColors.greenColor,
           ),
@@ -289,7 +289,7 @@ class _LoginScreenState extends State<RegisterScreen> {
           //     title: 'Error',
           //     posActionName: 'Ok');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('The account already exists for that email.'),
               backgroundColor: AppColors.redColor,
             ),

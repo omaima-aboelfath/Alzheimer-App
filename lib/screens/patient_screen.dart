@@ -97,7 +97,7 @@ class _PatientScreenState extends State<PatientScreen> {
       //   ],
       // ),
     body:_isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           :
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -133,7 +133,7 @@ class _PatientScreenState extends State<PatientScreen> {
                 MaterialPageRoute(builder: (context) => LocationTracker()),
               );
             },
-            child: Text('Open GPS Module'),
+            child: const Text('Open GPS Module'),
           ),
         ],
       ),    

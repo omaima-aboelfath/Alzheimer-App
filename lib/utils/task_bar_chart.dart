@@ -9,7 +9,7 @@ class TaskBarChart extends StatelessWidget {
   final Map<DateTime, int> incompleteData; // Data for incomplete tasks
   final Map<DateTime, int> completeData; // Data for complete tasks
 
-  TaskBarChart({required this.incompleteData, required this.completeData});
+  const TaskBarChart({super.key, required this.incompleteData, required this.completeData});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class TaskBarChart extends StatelessWidget {
           'Number of Tasks',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         SizedBox(
           height: 200, // Define a height for the BarChart
           width: 350,
@@ -83,19 +83,19 @@ class TaskBarChart extends StatelessWidget {
                     },
                   ),
                 ),
-                rightTitles: AxisTitles(
+                rightTitles: const AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: false,
                   ),
                 ),
-                topTitles: AxisTitles(
+                topTitles: const AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: false,
                   ),
                 ),
               ),
               barGroups: barGroups,
-              gridData: FlGridData(show: false),
+              gridData: const FlGridData(show: false),
               borderData: FlBorderData(
                 show: true,
                 border: Border.all(color: Colors.black, width: 1),
@@ -103,7 +103,7 @@ class TaskBarChart extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -112,16 +112,16 @@ class TaskBarChart extends StatelessWidget {
               width: 20,
               color: Colors.red,
             ),
-            SizedBox(width: 5),
-            Text('Incomplete Tasks', style: TextStyle(fontSize: 14)),
-            SizedBox(width: 20),
+            const SizedBox(width: 5),
+            const Text('Incomplete Tasks', style: TextStyle(fontSize: 14)),
+            const SizedBox(width: 20),
             Container(
               height: 20,
               width: 20,
               color: Colors.green,
             ),
-            SizedBox(width: 5),
-            Text('Complete Tasks', style: TextStyle(fontSize: 14)),
+            const SizedBox(width: 5),
+            const Text('Complete Tasks', style: TextStyle(fontSize: 14)),
           ],
         ),
       ],

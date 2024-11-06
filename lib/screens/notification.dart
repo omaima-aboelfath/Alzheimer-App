@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:alert_dialog/alert_dialog.dart';
 import 'package:graduation_app/screens/caregiver_screen.dart';
 import 'package:http/http.dart' as http;
 

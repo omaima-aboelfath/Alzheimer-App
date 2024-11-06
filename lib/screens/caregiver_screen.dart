@@ -13,7 +13,7 @@ class CaregiverScreen extends StatefulWidget {
   static const String routeName = 'caregiverScreen';
 
   final String uId; // Assume this is passed to the screen constructor
-  CaregiverScreen({required this.uId});
+  const CaregiverScreen({super.key, required this.uId});
   @override
   _CaregiverScreenState createState() => _CaregiverScreenState();
 }
@@ -29,6 +29,7 @@ class _CaregiverScreenState extends State<CaregiverScreen> {
         .fetchPatients(caregiverId);
   }
 
+  @override
   void initState() {
     super.initState();
     // Fetch tasks when the screen initializes
@@ -63,8 +64,8 @@ class _CaregiverScreenState extends State<CaregiverScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         // crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15),
+          const Padding(
+            padding: EdgeInsets.all(15),
             child: Text('Choose Your Patient:'),
           ),
           Consumer<PatientProvider>(
@@ -116,7 +117,7 @@ class _CaregiverScreenState extends State<CaregiverScreen> {
           Container(
             margin: const EdgeInsets.all(10),
             // color: const Color.fromARGB(17, 98, 255, 59),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.white,
               // border: Border.all(
               //   color: AppColors.lightBlue,
@@ -127,9 +128,9 @@ class _CaregiverScreenState extends State<CaregiverScreen> {
             height: 300,
             child: Expanded(
               child: Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: taskProvider.incompleteTasks.isEmpty
-                    ? Text("No incomplete tasks to display")
+                    ? const Text("No incomplete tasks to display")
                     : SizedBox(
                         height: 300,
                         child: TaskBarChart(
@@ -165,8 +166,8 @@ class _CaregiverScreenState extends State<CaregiverScreen> {
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                       trailing: task.isDone
-                          ? Icon(Icons.check, color: Colors.green)
-                          : Icon(
+                          ? const Icon(Icons.check, color: Colors.green)
+                          : const Icon(
                               Icons.close,
                               color: Colors.red,
                             ),

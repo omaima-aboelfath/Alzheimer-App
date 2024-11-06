@@ -9,7 +9,6 @@ import 'package:graduation_app/utils/local_notification_service.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:timezone/timezone.dart';
 
 class AddTaskScreen extends StatefulWidget {
   static const String routeName = 'add_task';

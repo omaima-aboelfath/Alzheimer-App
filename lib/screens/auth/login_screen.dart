@@ -13,7 +13,7 @@ import '../../firebase_utils.dart';
 class LoginScreen extends StatefulWidget {
   static const String routeName = 'login';
 
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -92,8 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() {});
                         },
                         icon: isObscure
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility)),
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility)),
                   ),
                   TextButton(
                       onPressed: () {},
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
         //     });
         print("Login Successfully");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Login successfully'),
             backgroundColor: AppColors.greenColor,
           ),
@@ -201,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
           //     title: 'Error',
           //     posActionName: 'Ok');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
                 content: Text(
                     'The supplied auth credential is incorrect, malformed or has expired.'),
                 backgroundColor: AppColors.redColor),

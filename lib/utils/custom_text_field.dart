@@ -22,7 +22,7 @@ class CustomTextfield extends StatelessWidget {
       this.labelText = '',
       // this.text2 = '',
       required this.validator,
-      this.suffixIcon = null,
+      this.suffixIcon,
       this.style});
 
   @override

@@ -146,7 +146,7 @@ class TaskListItem extends StatelessWidget {
                                   userProvider.currentUser!
                                       .id); //, userProvider.currentUser!.id
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.check,
                           color: AppColors.white,
                           size: 35,
@@ -179,7 +179,7 @@ class TaskListItem extends StatelessWidget {
                             print('Error updating task: $e');
                           }
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.check,
                           color: AppColors.white,
                           size: 35,

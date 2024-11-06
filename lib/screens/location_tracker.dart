@@ -3,15 +3,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 
-
 class LocationTracker extends StatefulWidget {
+  const LocationTracker({super.key});
+
   @override
   _LocationTrackerState createState() => _LocationTrackerState();
 }
 
 class _LocationTrackerState extends State<LocationTracker> {
   Position? _currentPosition; // To store the current location
-  StreamSubscription<Position>? _positionStream; // Stream for continuous location updates
+  StreamSubscription<Position>?
+      _positionStream; // Stream for continuous location updates
   GoogleMapController? _mapController; // Controller for Google Map
 
   @override
@@ -23,7 +25,12 @@ class _LocationTrackerState extends State<LocationTracker> {
   // Request location permission from user
   void _requestLocationPermission() async {
     LocationPermission permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
       _startLocationUpdates();
     } else {
       print('Location permission denied');
@@ -32,8 +39,10 @@ class _LocationTrackerState extends State<LocationTracker> {
 
   // Start listening to location updates and move the camera to the updated location
   void _startLocationUpdates() {
+    _positionStream
+        ?.cancel(); // Cancel any existing stream before starting a new one
     _positionStream = Geolocator.getPositionStream(
-      locationSettings: LocationSettings(
+      locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
       ),
@@ -48,6 +57,7 @@ class _LocationTrackerState extends State<LocationTracker> {
             LatLng(position.latitude, position.longitude),
           ),
         );
+        print('Current Location: ${position.latitude}, ${position.longitude}');
       }
     });
   }
@@ -60,24 +70,28 @@ class _LocationTrackerState extends State<LocationTracker> {
   @override
   void dispose() {
     _positionStream?.cancel(); // Cancel the location updates stream
+    _mapController?.dispose(); // Dispose of the map controller
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('GPS Tracker')),
+      appBar: AppBar(title: const Text('GPS Tracker')),
       body: _currentPosition == null
-          ? Center(child: CircularProgressIndicator()) // Show loading icon if location is not available
+          ? const Center(
+              child:
+                  CircularProgressIndicator()) // Show loading icon if location is not available
           : GoogleMap(
-        onMapCreated: _onMapCreated, // Assign the map controller
-        initialCameraPosition: CameraPosition(
-          target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          zoom: 15,
-        ),
-        myLocationEnabled: true, // Enable 'my location' button
-        myLocationButtonEnabled: true,
-      ),
+              onMapCreated: _onMapCreated, // Assign the map controller
+              initialCameraPosition: CameraPosition(
+                target: LatLng(
+                    _currentPosition!.latitude, _currentPosition!.longitude),
+                zoom: 15,
+              ),
+              myLocationEnabled: true, // Enable 'my location' button
+              myLocationButtonEnabled: true,
+            ),
     );
   }
 }

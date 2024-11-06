@@ -5,7 +5,7 @@ class NotificationScreen extends StatelessWidget {
   static const String routeName = 'notification-screen';
   final RemoteMessage message;
 
-  NotificationScreen({required this.message});
+  const NotificationScreen({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +31,9 @@ class NotificationScreen extends StatelessWidget {
             if (message.notification != null) ...[
               Text(
                 message.notification!.body ?? 'No message body',
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
-              SizedBox(height: 20), // Add spacing between widgets
+              const SizedBox(height: 20), // Add spacing between widgets
             ],
             // Text(message.notification!.body!),
             // Text("Handling a foreground message: ${message.messageId}"),
