@@ -130,7 +130,7 @@ class _CaregiverScreenState extends State<CaregiverScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: taskProvider.incompleteTasks.isEmpty
-                    ? const Text("No incomplete tasks to display")
+                    ? Center(child: const Text("No tasks to display"))
                     : SizedBox(
                         height: 300,
                         child: TaskBarChart(

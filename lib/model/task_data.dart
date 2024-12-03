@@ -8,6 +8,7 @@ class Task {
   DateTime dateTime;
   bool isDone;
   String priority; // "High", "Medium", "Low"
+  DateTime? completedAt; // Nullable, only set when task is completed
 
   // String formattedDateTime;
   Task({
@@ -17,6 +18,7 @@ class Task {
     required this.dateTime,
     this.isDone = false,
     this.priority = 'Low',
+    this.completedAt
     // required this.formattedDateTime
   });
 
@@ -33,6 +35,9 @@ class Task {
               map['dateTime']), // to convert int to DateTime
           isDone: map['isDone'],
           priority: map['priority'] ?? 'Low',
+          completedAt: map['completedAt'] != null
+              ? DateTime.fromMillisecondsSinceEpoch(map['completedAt'])
+              : null,
           // formattedDateTime: map['formattedDateTime']
         );
 
@@ -45,6 +50,7 @@ class Task {
       'dateTime': dateTime.millisecondsSinceEpoch, // to convert DateTime to int
       'isDone': isDone,
       'priority': priority,
+      'completedAt': completedAt?.millisecondsSinceEpoch,
       // 'formattedDateTime': formattedDateTime
     };
   }

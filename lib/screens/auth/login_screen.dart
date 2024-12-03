@@ -6,9 +6,10 @@ import 'package:graduation_app/screens/caregiver_screen.dart';
 import 'package:graduation_app/screens/patient_screen.dart';
 import 'package:graduation_app/utils/app_colors.dart';
 import 'package:graduation_app/utils/custom_text_field.dart';
+import 'package:graduation_app/utils/dialog_utils.dart';
 import 'package:provider/provider.dart';
 
-import '../../firebase_utils.dart';
+import '../../utils/firebase_utils.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = 'login';
@@ -23,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   var formKey = GlobalKey<FormState>();
 
   TextEditingController emailController =
-      TextEditingController(text: 'omaima2@gmail.com');
+      TextEditingController(text: 'omaima11@gmail.com');
 
   TextEditingController passwordController =
       TextEditingController(text: '123456');
@@ -120,7 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, RegisterScreen.routeName);
+                        Navigator.pushReplacementNamed(
+                            context, RegisterScreen.routeName);
                       },
                       child: Text('Didnt have account? create here',
                           style: Theme.of(context).textTheme.bodySmall)),
@@ -168,18 +170,34 @@ class _LoginScreenState extends State<LoginScreen> {
         //       Navigator.pushReplacementNamed(context, HomeScreen.routeName);
         //     });
         print("Login Successfully");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successfully'),
-            backgroundColor: AppColors.greenColor,
-          ),
-        );
-        if (userProvider.currentUser?.role == 'Patient') {
-          Navigator.pushReplacementNamed(context, PatientScreen.routeName);
-        } else if (userProvider.currentUser?.role == 'Caregiver') {
-          Navigator.pushReplacementNamed(context, CaregiverScreen.routeName, arguments: userProvider.currentUser!.id);
-        }
-        // Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //     content: Text('Login successfully'),
+        //     backgroundColor: AppColors.greenColor,
+        //   ),
+        // );
+        DialogUtils.showMessage(
+            context: context,
+            title: 'Success',
+            titleColor: AppColors.greenColor,
+            message: 'Login Successfully',
+            onClose: () {
+              Navigator.pop(context);
+              if (userProvider.currentUser?.role == 'Patient') {
+                Navigator.pushReplacementNamed(
+                    context, PatientScreen.routeName);
+              } else if (userProvider.currentUser?.role == 'Caregiver') {
+                Navigator.pushReplacementNamed(
+                    context, CaregiverScreen.routeName,
+                    arguments: userProvider.currentUser!.id);
+              }
+            });
+        // if (userProvider.currentUser?.role == 'Patient') {
+        //   Navigator.pushReplacementNamed(context, PatientScreen.routeName);
+        // } else if (userProvider.currentUser?.role == 'Caregiver') {
+        //   Navigator.pushReplacementNamed(context, CaregiverScreen.routeName,
+        //       arguments: userProvider.currentUser!.id);
+        // }
         // print user id and if not found print null
         print(credential.user?.uid ?? "");
         // }
@@ -191,42 +209,38 @@ class _LoginScreenState extends State<LoginScreen> {
         // }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'invalid-credential') {
-          //todo: hide loading
-          // DialogUtils.hideLoading(context);
-          // //show message
-          // DialogUtils.showMessage(
-          //     context: context,
-          //     message:
-          //         'The supplied auth credential is incorrect, malformed or has expired.',
-          //     title: 'Error',
-          //     posActionName: 'Ok');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text(
-                    'The supplied auth credential is incorrect, malformed or has expired.'),
-                backgroundColor: AppColors.redColor),
+          DialogUtils.showMessage(
+            context: context,
+            title: 'Error',
+            message:
+                'The supplied auth credential is incorrect, malformed or has expired',
+            titleColor: AppColors.redColor,
           );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //       content: Text(
+          //           'The supplied auth credential is incorrect, malformed or has expired.'),
+          //       backgroundColor: AppColors.redColor),
+          // );
           print(
               'The supplied auth credential is incorrect, malformed or has expired.');
         }
       } catch (e) {
-        //todo: hide loading
-        // DialogUtils.hideLoading(context);
-        // //show message
-        // DialogUtils.showMessage(
-        //     context: context,
-        //     message: e.toString(),
-        //     title: 'Error',
-        //     posActionName: 'Ok');
         print(e
             .toString()); // print the string of exception that not specified above
         print('Login failed: ${e.toString()}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: AppColors.redColor,
-          ),
+        DialogUtils.showMessage(
+          context: context,
+          title: 'Error',
+          message: '${e.toString()},',
+          titleColor: AppColors.redColor,
         );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(e.toString()),
+        //     backgroundColor: AppColors.redColor,
+        //   ),
+        // );
       }
     }
   }

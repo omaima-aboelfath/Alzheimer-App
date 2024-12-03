@@ -77,7 +77,9 @@ class _LocationTrackerState extends State<LocationTracker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('GPS Tracker')),
+      appBar: AppBar(
+          title: Text('My Location',
+              style: Theme.of(context).textTheme.displayMedium)),
       body: _currentPosition == null
           ? const Center(
               child:

@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:graduation_app/caregiver.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:graduation_app/local_notification_test.dart';
 import 'package:graduation_app/messaging/firebase_notification.dart';
 import 'package:graduation_app/providers/patient_provider.dart';
@@ -20,8 +19,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:graduation_app/utils/local_notification_service.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+// import 'package:timezone/data/latest.dart' as tz;
+// import 'package:timezone/timezone.dart' as tz;
 import 'package:graduation_app/screens/location_tracker.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -149,7 +148,6 @@ class _MyAppState extends State<MyApp> {
               message: message); // Pass the message to NotificationScreen
         },
         LocalNotificationTest.routeName: (context) => LocalNotificationTest(),
-        Caregiver.routeName: (context) => Caregiver(),
         '/locationTracker': (context) => LocationTracker()
       },
     );

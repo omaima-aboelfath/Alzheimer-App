@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:graduation_app/firebase_utils.dart';
+import 'package:graduation_app/utils/firebase_utils.dart';
 import 'package:graduation_app/model/task_data.dart';
 import 'package:graduation_app/model/user_data.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +13,6 @@ class TaskProvider extends ChangeNotifier {
   // data
 
   List<Task> tasksList = [];
-  // List<Task> get tasks => tasksList;
   List<Task> incompleteTasks = [];
   List<Task> completeTasks = [];
 

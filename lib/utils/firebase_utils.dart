@@ -131,6 +131,14 @@ class FirebaseUtils {
     }).toList();
   }
 
+  static Future<void> markTaskAsDone(Task task, String uId) async {
+  var taskDocRef = getTasksCollection(uId).doc(task.id);
+  await taskDocRef.update({
+    'isDone': true,
+    'completedAt': DateTime.now().millisecondsSinceEpoch,
+  });
+}
+
   // Fetch tasks for a specific patient where isDone = false
   /*
   static Future<List<Task>> fetchTasksForPatient(String patientId) async {

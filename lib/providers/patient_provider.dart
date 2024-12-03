@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_app/firebase_utils.dart';
+import 'package:graduation_app/utils/firebase_utils.dart';
 import 'package:graduation_app/model/user_data.dart';
 
 class PatientProvider with ChangeNotifier {

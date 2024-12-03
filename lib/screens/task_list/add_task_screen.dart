@@ -1,10 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:graduation_app/firebase_utils.dart';
+import 'package:graduation_app/utils/firebase_utils.dart';
 import 'package:graduation_app/model/task_data.dart';
 import 'package:graduation_app/providers/task_provider.dart';
 import 'package:graduation_app/providers/user_provider.dart';
 import 'package:graduation_app/screens/patient_screen.dart';
 import 'package:graduation_app/utils/app_colors.dart';
+import 'package:graduation_app/utils/dialog_utils.dart';
 import 'package:graduation_app/utils/local_notification_service.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
@@ -30,111 +33,119 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Widget build(BuildContext context) {
     listProvider = Provider.of<TaskProvider>(context);
     return Scaffold(
-      body: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // SizedBox(height: 0.1 * height),
-            Text(
-              'Add Task Title',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: TextFormField(
-                  validator: (text) {
-                    if (text == null || text.isEmpty) {
-                      return 'please enter task title'; // field invalid
-                    }
-                    return null; // field valid
-                  },
-                  onChanged: (text) {
-                    title = text;
-                  },
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    fillColor: AppColors.white,
-                    filled: true,
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: const BorderSide(
-                            color: AppColors.mediumBlue, width: 1.5)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: const BorderSide(
-                            color: AppColors.mediumBlue, width: 1.5)),
-                  )),
-            ),
-            Text(
-              'Description',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: TextFormField(
-                  validator: (text) {
-                    if (text == null || text.isEmpty) {
-                      return 'please enter task description'; // field invalid
-                    }
-                    return null; // field valid
-                  },
-                  onChanged: (text) {
-                    description = text;
-                  },
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    fillColor: AppColors.white,
-                    filled: true,
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: const BorderSide(
-                            color: AppColors.mediumBlue, width: 1.5)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: const BorderSide(
-                            color: AppColors.mediumBlue, width: 1.5)),
-                  )),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final DateTime? dateTime =
-                    await showOmniDateTimePicker(context: context);
-                // Use dateTime here
-                debugPrint('dateTime: $dateTime');
-                setState(() {
-                  _dateTime = dateTime;
-                });
-              },
-              child: Text('Show DateTime Picker',
-                  style: Theme.of(context).textTheme.displaySmall),
-            ),
-
-            Text(
-                _dateTime != null
-                    ? DateFormat('dd-MM-yyyy hh:mm a').format(_dateTime!)
-                    : 'No date selected',
-                style: _dateTime != null
-                    ? Theme.of(context).textTheme.bodySmall
-                    : Theme.of(context)
-                        .textTheme
-                        .bodySmall!
-                        .copyWith(color: Colors.red)),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(AppColors.lightBlue),
+      appBar: AppBar(
+        title: Text('Add New Task',
+            style: Theme.of(context).textTheme.displayMedium),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height * 0.16),
+                Text(
+                  'Add Task Title',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
-                onPressed: () {
-                  addTask();
-                },
-                child: Text('Submit',
-                    style: Theme.of(context).textTheme.displaySmall),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: TextFormField(
+                      validator: (text) {
+                        if (text == null || text.isEmpty) {
+                          return 'please enter task title'; // field invalid
+                        }
+                        return null; // field valid
+                      },
+                      onChanged: (text) {
+                        title = text;
+                      },
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                        fillColor: AppColors.white,
+                        filled: true,
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                                color: AppColors.mediumBlue, width: 1.5)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                                color: AppColors.mediumBlue, width: 1.5)),
+                      )),
+                ),
+                Text(
+                  'Description',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: TextFormField(
+                      validator: (text) {
+                        if (text == null || text.isEmpty) {
+                          return 'please enter task description'; // field invalid
+                        }
+                        return null; // field valid
+                      },
+                      onChanged: (text) {
+                        description = text;
+                      },
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        fillColor: AppColors.white,
+                        filled: true,
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                                color: AppColors.mediumBlue, width: 1.5)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                                color: AppColors.mediumBlue, width: 1.5)),
+                      )),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final DateTime? dateTime =
+                        await showOmniDateTimePicker(context: context);
+                    // Use dateTime here
+                    debugPrint('dateTime: $dateTime');
+                    setState(() {
+                      _dateTime = dateTime;
+                    });
+                  },
+                  child: Text('Select the date and time',
+                      style: Theme.of(context).textTheme.displaySmall),
+                ),
+                Text(
+                    _dateTime != null
+                        ? ("Date selected: ${DateFormat('dd-MM-yyyy hh:mm a').format(_dateTime!)}")
+                        : 'No date selected',
+                    style: _dateTime != null
+                        ? Theme.of(context).textTheme.bodySmall
+                        : Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(color: Colors.red)),
+                Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStatePropertyAll(AppColors.lightBlue),
+                    ),
+                    onPressed: () {
+                      addTask();
+                    },
+                    child: Text('Submit',
+                        style: Theme.of(context).textTheme.displaySmall),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -236,18 +247,28 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               .getAllTasksFromFireStore(userProvider.currentUser!.id);
           // // Schedule the notification after adding the task
           // // await listProvider.scheduleNotification(task);
-          Navigator.pushReplacementNamed(context, PatientScreen.routeName);
+          DialogUtils.showMessage(
+              context: context,
+              title: 'Success',
+              message: 'Task Added successfully',
+              titleColor: AppColors.greenColor,
+              onClose: () {
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(
+                    context, PatientScreen.routeName);
+              });
+          // Navigator.pushReplacementNamed(context, PatientScreen.routeName);
           print('task added successfully');
           print(task.id);
           print('${task.title} ${task.description}');
           LocalNotificationService.showScheduledNotification(
               currentDate: _dateTime!);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Task added successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content: Text('Task added successfully'),
+          //     backgroundColor: Colors.green,
+          //   ),
+          // );
         },
       );
       // offline
@@ -260,7 +281,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       //     ScaffoldMessenger.of(context).showSnackBar(
       //       const SnackBar(content: Text('Task added successfully')),
       //     );
-
       //     // print(task.id);
       //     // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
       //     listProvider.getAllTasksFromFireStore(userProvider
