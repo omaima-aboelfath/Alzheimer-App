@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_app/utils/app_colors.dart';
+import 'package:graduation_app/screens/theming/app_colors.dart';
 
 class CustomTextfield extends StatelessWidget {
   // String? hintText;
@@ -12,6 +12,7 @@ class CustomTextfield extends StatelessWidget {
   String labelText;
   // String text2;
   TextStyle? style;
+  bool readOnly;
 
   CustomTextfield(
       {super.key,
@@ -23,7 +24,8 @@ class CustomTextfield extends StatelessWidget {
       // this.text2 = '',
       required this.validator,
       this.suffixIcon,
-      this.style});
+      this.style,
+      this.readOnly = false});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class CustomTextfield extends StatelessWidget {
         keyboardType: keyboardType,
         controller: controller,
         validator: validator,
+        readOnly: readOnly,
         decoration: InputDecoration(
           suffixIcon: suffixIcon,
           enabledBorder: OutlineInputBorder(

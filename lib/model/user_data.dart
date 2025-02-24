@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MyUser {
   static const String collectionName = 'users';
   String id; // to access specific user
@@ -5,28 +7,38 @@ class MyUser {
   String email;
   String password;
   String role; // "patient" or "caregiver"
-  // final String relationship; // optional, for caregivers
-  List<String> taskIds; // New property to store task IDs
+  double? latitude; // Nullable, updated when the patient's location changes
+  double? longitude; // Nullable, updated when the patient's location changes
+  DateTime? timestamp; // Timestamp of the last location update
+
+
   MyUser({
     required this.id,
     required this.name,
     required this.email,
     required this.password,
     required this.role,
+    this.latitude,
+    this.longitude,
+    this.timestamp,
     // this.relationship = '',
-    this.taskIds = const [], // Initialize with an empty list by default
   });
 
   // json to object
-  MyUser.fromFireStore(Map<String, dynamic> data)
+  MyUser.fromFireStore(Map<String, dynamic> data, String documentId)
       : this(
           id: data['id'],
           name: data['name'],
           email: data['email'],
           password: data['password'],
           role: data['role'],
-          taskIds: List<String>.from(
-              data['taskIds'] ?? []), // Ensure taskIds are parsed
+          latitude: data['latitude'],
+    longitude: data['longitude'],
+    timestamp: data['timestamp'] != null
+        ? (data['timestamp'] as Timestamp).toDate()
+        : null,
+          // taskIds: List<String>.from(
+          //     data['taskIds'] ?? []), // Ensure taskIds are parsed
         );
 
   // object to json
@@ -37,7 +49,10 @@ class MyUser {
       'email': email,
       'password': password,
       'role': role,
-      'taskIds': taskIds, 
+      'latitude': latitude,
+      'longitude': longitude,
+      'timestamp': timestamp != null ? Timestamp.fromDate(timestamp!) : null,
+      // 'taskIds': taskIds, 
     };
   }
 

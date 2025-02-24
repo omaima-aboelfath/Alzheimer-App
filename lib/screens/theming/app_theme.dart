@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:graduation_app/utils/app_colors.dart';
+import 'package:graduation_app/screens/theming/app_colors.dart';
 
 class AppTheme {
   static ThemeData myTheme = ThemeData(

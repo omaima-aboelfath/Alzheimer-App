@@ -1,30 +1,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:graduation_app/utils/date_time_utils.dart';
 import 'package:graduation_app/utils/firebase_utils.dart';
 import 'package:graduation_app/model/task_data.dart';
 import 'package:graduation_app/providers/task_provider.dart';
 import 'package:graduation_app/providers/user_provider.dart';
-import 'package:graduation_app/screens/task_list/add_task_screen.dart';
-import 'package:graduation_app/utils/app_colors.dart';
-import 'package:graduation_app/utils/dialog_utils.dart';
+import 'package:graduation_app/screens/theming/app_colors.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../utils/dialog_utils.dart';
 
 class TaskListItem extends StatelessWidget {
-  Task task;
+  TaskData task;
   TaskListItem({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
     final listProvider = Provider.of<TaskProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final taskColor = task.isDone ? AppColors.greenColor : AppColors.lightBlue;
-    final taskDetailsColor =
-        task.isDone ? AppColors.greenColor : AppColors.darkBlue;
+    // final taskColor = task.isDone ? AppColors.greenColor : AppColors.lightBlue;
+    final taskColor = (task.completedAt != null &&
+            task.completedAt!
+                .isAfter(task.dateTime)) //delayed & completed tasks
+        ? AppColors.greenColor
+        : task.isDone
+            ? AppColors.greenColor
+            : AppColors.darkBlue;
+    // final taskDetailsColor =
+    //     task.isDone ? AppColors.greenColor : AppColors.darkBlue;
+    final taskDetailsColor = (task.completedAt != null &&
+            task.completedAt!
+                .isAfter(task.dateTime)) //delayed & completed tasks
+        ? AppColors.greenColor
+        : task.isDone
+            ? AppColors.greenColor
+            : AppColors.darkBlue;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(7),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             color: AppColors.white,
@@ -33,11 +47,8 @@ class TaskListItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              margin: const EdgeInsets.all(10),
+              margin: const EdgeInsets.all(8),
               color: taskColor,
-              // color: task.isDone == true
-              //     ? AppColors.greenColor
-              //     : AppColors.lightBlue,
               height: MediaQuery.of(context).size.height * 0.1,
               width: 4,
             ),
@@ -50,27 +61,30 @@ class TaskListItem extends StatelessWidget {
                     task.title,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: taskDetailsColor,
-                          // color: task.isDone == true
-                          //     ? AppColors.greenColor
-                          //     : AppColors.darkBlue
                         )),
                 Text(DateFormat('dd-MM-yyyy hh:mm a').format(task.dateTime),
                     // 'task1 date & time',
                     // task.dateTime.toString(),
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          // color: task.isDone == true
-                          //     ? AppColors.greenColor
-                          //     : AppColors.darkBlue
                           color: taskDetailsColor,
                         )),
                 if (task.completedAt !=
                     null) // Show completion time if available
                   Text(
-                    'Completed At: ${DateFormat('dd-MM-yyyy hh:mm a').format(task.completedAt!)}',
+                    'Completed At: ${DateTimeUtils.format(task.completedAt!)}',
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: AppColors.greenColor,
+                          color: isTaskDelayed(task)
+                              ? AppColors.redColor
+                              : AppColors.greenColor,
                         ),
                   ),
+                // if (isTaskDelayed(task))
+                //   Text(
+                //     'Delayed for ${DateTimeUtils.formatDelay(task.completedAt!.difference(task.dateTime))}',
+                //     style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                //           color: AppColors.redColor,
+                //         ),
+                //   ),
               ],
             )),
             // my code
@@ -284,6 +298,7 @@ class TaskListItem extends StatelessWidget {
             //   //   color: AppColors.redColor,
             //   // ),
             //   child:
+
             IconButton(
               onPressed: () async {
                 try {
@@ -314,7 +329,7 @@ class TaskListItem extends StatelessWidget {
               icon: const Icon(
                 Icons.delete,
                 // color: AppColors.white,
-                color: AppColors.redColor,
+                color: AppColors.greyColor,
                 size: 35,
               ),
             ),
@@ -336,6 +351,11 @@ class TaskListItem extends StatelessWidget {
                     // Mark as done
                     task.isDone = true;
                     task.completedAt = DateTime.now();
+                    // Calculate the delay
+                    final delay = task.completedAt!.difference(task.dateTime);
+                    task.delay = delay.isNegative
+                        ? 'Completed on time'
+                        : DateTimeUtils.formatDelay(delay);
                     await FirebaseFirestore.instance
                         .collection('users')
                         .doc(userProvider.currentUser!.id)
@@ -344,11 +364,15 @@ class TaskListItem extends StatelessWidget {
                         .update({
                       'isDone': task.isDone,
                       'completedAt': task.completedAt!.millisecondsSinceEpoch,
+                      'delay': task.delay,
                     });
                   } else {
                     // Undo mark as done
                     task.isDone = false;
                     task.completedAt = null;
+                    task.delay = null;
+
+                    // Update Firestore
                     await FirebaseFirestore.instance
                         .collection('users')
                         .doc(userProvider.currentUser!.id)
@@ -357,6 +381,7 @@ class TaskListItem extends StatelessWidget {
                         .update({
                       'isDone': task.isDone,
                       'completedAt': null,
+                      'delay': null,
                     });
                   }
                   listProvider.updateTask(task, userProvider.currentUser!.id);
@@ -379,7 +404,7 @@ class TaskListItem extends StatelessWidget {
   }
 
   /// Determines if the task was completed late
-  bool isTaskDelayed(Task task) {
+  bool isTaskDelayed(TaskData task) {
     if (task.completedAt != null) {
       return task.completedAt!.isAfter(task.dateTime);
     }

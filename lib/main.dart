@@ -1,27 +1,30 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:graduation_app/local_notification_test.dart';
 import 'package:graduation_app/messaging/firebase_notification.dart';
+import 'package:graduation_app/model/api_manager.dart';
 import 'package:graduation_app/providers/patient_provider.dart';
 import 'package:graduation_app/providers/task_provider.dart';
 import 'package:graduation_app/providers/user_provider.dart';
+import 'package:graduation_app/screens/auth/forgot_password_confirmation_screen.dart';
+import 'package:graduation_app/screens/auth/forgot_password_screen.dart';
 import 'package:graduation_app/screens/caregiver_screen.dart';
 import 'package:graduation_app/screens/notification.dart';
 import 'package:graduation_app/screens/notification_screen.dart';
 import 'package:graduation_app/screens/patient_screen.dart';
 import 'package:graduation_app/screens/auth/register_screen.dart';
 import 'package:graduation_app/screens/task_list/add_task_screen.dart';
-import 'package:graduation_app/utils/app_theme.dart';
+import 'package:graduation_app/screens/theming/app_theme.dart';
 import 'package:graduation_app/screens/auth/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:graduation_app/utils/local_notification_service.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'utils/firebase_utils.dart';
 // import 'package:timezone/data/latest.dart' as tz;
 // import 'package:timezone/timezone.dart' as tz;
-import 'package:graduation_app/screens/location_tracker.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -69,6 +72,8 @@ Future<void> main() async {
       create: (_) => UserProvider(),
     ),
     ChangeNotifierProvider(create: (_) => PatientProvider()),
+    Provider<ApiManager>(create: (_) => ApiManager()),
+    Provider<FirebaseUtils>(create: (_) => FirebaseUtils()),
   ], child: const MyApp()));
 }
 
@@ -123,6 +128,23 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  void savePatientLocation(
+      String patientId, double latitude, double longitude) {
+    final DatabaseReference database =
+        FirebaseDatabase.instance.ref(); // Corrected method to get a reference
+
+    database.child('patients').child(patientId).set({
+      'latitude': latitude,
+      'longitude': longitude,
+      'timestamp':
+          DateTime.now().millisecondsSinceEpoch // Use timestamp in milliseconds
+    }).then((_) {
+      print('Patient location saved successfully');
+    }).catchError((error) {
+      print('Failed to save patient location: $error');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -135,7 +157,8 @@ class _MyAppState extends State<MyApp> {
         RegisterScreen.routeName: (context) => const RegisterScreen(),
         PatientScreen.routeName: (context) => const PatientScreen(),
         CaregiverScreen.routeName: (context) => CaregiverScreen(
-              // body: '',
+              // userId: userId ?? '6Tj1NaTnPVXfd2f6PZoQ5j2gs8g2',
+              // // body: '',
               uId: userId ?? '', // Pass userId or an empty string if null
             ),
         AddTaskScreen.routeName: (context) => const AddTaskScreen(),
@@ -148,7 +171,9 @@ class _MyAppState extends State<MyApp> {
               message: message); // Pass the message to NotificationScreen
         },
         LocalNotificationTest.routeName: (context) => LocalNotificationTest(),
-        '/locationTracker': (context) => LocationTracker()
+        ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
+        ForgotPasswordConfirmationScreen.routeName: (context) =>
+            ForgotPasswordConfirmationScreen(),
       },
     );
   }

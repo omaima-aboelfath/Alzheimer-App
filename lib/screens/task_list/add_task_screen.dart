@@ -1,13 +1,12 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:graduation_app/utils/dialog_utils.dart';
 import 'package:graduation_app/utils/firebase_utils.dart';
 import 'package:graduation_app/model/task_data.dart';
 import 'package:graduation_app/providers/task_provider.dart';
 import 'package:graduation_app/providers/user_provider.dart';
 import 'package:graduation_app/screens/patient_screen.dart';
-import 'package:graduation_app/utils/app_colors.dart';
-import 'package:graduation_app/utils/dialog_utils.dart';
+import 'package:graduation_app/screens/theming/app_colors.dart';
 import 'package:graduation_app/utils/local_notification_service.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
@@ -229,7 +228,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       }
       // String formattedDateTime =
       //     DateFormat('dd-MM-yyyy hh:mm a').format(_dateTime!);
-      Task task = Task(
+      TaskData task = TaskData(
         title: title,
         description: description,
         dateTime: _dateTime!,

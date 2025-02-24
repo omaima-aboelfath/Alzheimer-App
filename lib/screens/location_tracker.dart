@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -94,6 +95,124 @@ class _LocationTrackerState extends State<LocationTracker> {
               myLocationEnabled: true, // Enable 'my location' button
               myLocationButtonEnabled: true,
             ),
+    );
+  }
+}
+*/
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
+
+class LocationTracker extends StatefulWidget {
+  final String patientId; // Add patientId as a parameter
+
+  const LocationTracker({super.key, required this.patientId});
+
+  @override
+  _LocationTrackerState createState() => _LocationTrackerState();
+}
+
+class _LocationTrackerState extends State<LocationTracker> {
+  Position? _currentPosition; // To store the current location
+  StreamSubscription<Position>? _positionStream; // Stream for continuous location updates
+  GoogleMapController? _mapController; // Controller for Google Map
+  late String patientId; // Declare patientId variable
+
+  @override
+  void initState() {
+    super.initState();
+    patientId = widget.patientId; // Assign patientId from the widget constructor
+    _requestLocationPermission();
+  }
+
+  // Request location permission from user
+  void _requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      _startLocationUpdates();
+    } else {
+      print('Location permission denied');
+    }
+  }
+
+  // Start listening to location updates and move the camera to the updated location
+  void _startLocationUpdates() {
+    _positionStream?.cancel(); // Cancel any existing stream before starting a new one
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+      // Update location in Firestore
+      _updateLocationInFirebase(position.latitude, position.longitude);
+      // Move the camera to the current location if map controller is initialized
+      if (_mapController != null) {
+        _mapController!.animateCamera(
+          CameraUpdate.newLatLng(
+            LatLng(position.latitude, position.longitude),
+          ),
+        );
+        print('Current Location: ${position.latitude}, ${position.longitude}');
+      }
+    });
+  }
+
+  // Update location in Firebase Firestore (users collection)
+  void _updateLocationInFirebase(double lat, double lon) {
+    FirebaseFirestore.instance.collection('users').doc(patientId).set({
+      'latitude': lat,
+      'longitude': lon,
+      'timestamp': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)).then((value) {
+      print('Location updated successfully in users collection');
+    }).catchError((error) {
+      print('Error updating location in users collection: $error');
+    });
+  }
+
+  // Callback when the map is created to assign the controller
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+  }
+
+  @override
+  void dispose() {
+    _positionStream?.cancel(); // Cancel the location updates stream
+    _mapController?.dispose(); // Dispose of the map controller
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('My Location',
+            style: Theme.of(context).textTheme.displayMedium),
+      ),
+      body: _currentPosition == null
+          ? const Center(
+          child: CircularProgressIndicator()) // Show loading icon if location is not available
+          : GoogleMap(
+        onMapCreated: _onMapCreated, // Assign the map controller
+        initialCameraPosition: CameraPosition(
+          target: LatLng(
+              _currentPosition!.latitude, _currentPosition!.longitude),
+          zoom: 15,
+        ),
+        myLocationEnabled: true, // Enable 'my location' button
+        myLocationButtonEnabled: true,
+      ),
     );
   }
 }
